@@ -28,9 +28,12 @@ class MainClass(TabbedPanel):
     
     #Generates Map
     def genMap(self):
+        try:
+            xRange = int(self.sizeX.text) + 1
+            yRange = int(self.sizeY.text) + 1
+        except:
+            return
         if int(self.sizeX.text) and int(self.sizeY.text):
-            xRange = int(self.sizeX.text)
-            yRange = int(self.sizeY.text)
             fig = plt.figure()
             ax = fig.add_subplot(1,1,1)
             xTicks = np.arange(0, xRange, 1)
