@@ -2,49 +2,88 @@
 
     sizeX: sizeX
 	sizeY: sizeY
+	startX: startX
+	startY: startY
+	gName: gName
+	gAuthor: gAuthor
 	generateMap: generateMap
+	left: left
+	right: right
+	up: up
 	
     do_default_tab: False
 
     TabbedPanelItem:
-        text: "Create"
+        text: "Map"
         GridLayout:
             cols: 1
             size: root.width, root.height
 			GridLayout:
 				size_hint_y: None
-				height: self.parent.height * .2
-                cols:2
+				height: self.parent.height * .15
+                cols:4
 				
 				Label:
-					size_hint_x: None
-					width: 200
+					text: "Title:"
+				TextInput:
+					id: gName
+				Label:
+					text: "Author:"
+				TextInput:
+					id: gAuthor
+				Label:
 					text: "Size X:"
 				TextInput:
-					#size_hint_y: None
-					#height: self.parent.height * .5
 					id: sizeX
-					width: 200
 				Label:
-					size_hint_x: None
-					width: 200
+					text: "Start X:"
+				TextInput:
+					id: startX
+				Label:
 					text: "Size Y:"
 				TextInput:
-					#size_hint_y: None
-					#height: self.parent.height * .5
 					id: sizeY
-					width: 200
+				Label:
+					text: "Start Y:"
+				TextInput:
+					id: startY
 			Button:
 				size_hint_y: None
 				height: self.parent.height * .1
 				id: generateMap
-				text: "Generate"
+				text: "Load/Generate Map"
 				on_press: root.genMap()
 			GridLayout:
 				size_hint_y: None
-				height: self.parent.height * .7
+				height: self.parent.height * .65
 				cols: 1
 				id: gridPlot
+			GridLayout:
+				size_hint_y: None
+				height: self.parent.height * .1
+				cols: 4
+				id: gridNav
+				Button:
+					id: left
+					text: "Left"
+					on_press: root.moveLeft()
+				Button:
+					id: right
+					text: "Right"
+					on_press: root.moveRight()
+				Button:
+					id: up
+					text: "Up"
+					on_press: root.moveUp()
+				Button:
+					id: down
+					text: "Down"
+					on_press: root.moveDown()
+	TabbedPanelItem:
+		text: "Populate"
+		GridLayout:
+			cols: 1
+            size: root.width, root.height
 					
 
                 
