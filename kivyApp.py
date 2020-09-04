@@ -189,6 +189,12 @@ class MainClass(TabbedPanel):
         cursor = con.cursor()
         cursor.execute("UPDATE spots SET description = ? WHERE xLoc = ? AND yLoc = ?", (self.lookDesc.text, self.location[0], self.location[1]))
         con.commit()
+        
+    def commitSpot():
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        
 #APP Class
 class MyApp(App):
     def build(self):
