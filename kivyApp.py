@@ -175,26 +175,27 @@ class MainClass(TabbedPanel):
             self.lookDesc.text = dataRes[0][1]
         except:
             self.lookDesc.text = ''
-                
+
     def updateName(self):
         global dbName
         con = sqlite3.connect(dbName + '.db')
         cursor = con.cursor()
         cursor.execute("UPDATE spots SET name = ? WHERE xLoc = ? AND yLoc = ?", (self.nameDesc.text, self.location[0], self.location[1]))
         con.commit()
-        
+
     def updateLook(self):
         global dbName
         con = sqlite3.connect(dbName + '.db')
         cursor = con.cursor()
         cursor.execute("UPDATE spots SET description = ? WHERE xLoc = ? AND yLoc = ?", (self.lookDesc.text, self.location[0], self.location[1]))
         con.commit()
-        
-    def commitSpot():
+
+    def commitSpot(self):
         global dbName
         con = sqlite3.connect(dbName + '.db')
         cursor = con.cursor()
-        
+        cursor.execute("INSERT INTO spots (xLoc, yLoc) VALUES (?, ?)", (self.location[0], self.location[1]))
+        con.commit()
 #APP Class
 class MyApp(App):
     def build(self):
