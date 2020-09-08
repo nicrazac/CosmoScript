@@ -13,6 +13,15 @@
 	locationCall: locationCall
 	lookDesc: lookDesc
 	nameDesc: nameDesc
+	itemList: itemList
+	radioNorth: radioNorth
+	radioEast: radioEast
+	radioSouth: radioSouth
+	radioWest: radioWest
+	northTags: northTags
+	eastTags: eastTags
+	southTags: southTags
+	westTags: westTags
 	
     do_default_tab: False
 
@@ -73,37 +82,37 @@
 				cols: 4
 				id: gridNav
 				Button:
-					id: left
-					text: "Left"
-					on_press: root.moveLeft()
-				Button:
-					id: right
-					text: "Right"
-					on_press: root.moveRight()
-				Button:
 					id: up
-					text: "Up"
+					text: "North"
 					on_press: root.moveUp()
 				Button:
 					id: down
-					text: "Down"
+					text: "South"
 					on_press: root.moveDown()
+				Button:
+					id: left
+					text: "West"
+					on_press: root.moveLeft()
+				Button:
+					id: right
+					text: "East"
+					on_press: root.moveRight()
+				
 	TabbedPanelItem:
 		text: "Populate"
 		GridLayout:
 			cols: 1
             size: root.width, root.height
 			GridLayout:
-				cols: 2
+				cols: 3
 				Label:
-					size_hint_y: None
-					height: self.parent.height * .1
 					id: locationCall
 				Button:
 					text: "Commit Spot"
 					on_press: root.commitSpot()
-			GridLayout:
-				cols: 3
+				Button:
+					text: "Delete Spot"
+					on_press: root.deleteSpot()
 				Label:
 					text: "Name of Spot:"
 				TextInput:
@@ -118,7 +127,52 @@
 				Button:
 					text: "Update"
 					on_press: root.updateLook()
-				
-					
-
+				Label:
+					text: "Items:"
+				TextInput:
+					id: itemList
+				Button:
+					text: "Update"
+					on_press: root.updateItems()
+			GridLayout:
+				cols: 2
+				Label:
+					text: "Directions:"
+				GridLayout:
+					cols: 4
+					Label:
+						text: "North"
+					Label:
+						text: "East"
+					Label:
+						text: "South"
+					Label:
+						text: "West"
+					CheckBox:
+						id: radioNorth
+						on_press: root.enableNorth()
+					CheckBox:
+						id: radioEast
+						on_active: root.enableEast()
+					CheckBox:
+						id: radioSouth
+						on_active: root.enableSouth()
+					CheckBox:
+						id: radioWest
+						on_active: root.enableWest()
+					TextInput:
+						id: northTags
+						disabled: True
+					TextInput:
+						id: eastTags
+						disabled: True
+					TextInput:
+						id: southTags
+						disabled: True
+					TextInput:
+						id: westTags
+						disabled: True
+			Button:
+				text: "Update Directions"
+				on_press: root.updateDirections()
                 

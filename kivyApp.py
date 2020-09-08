@@ -38,6 +38,15 @@ class MainClass(TabbedPanel):
     locationCall = ObjectProperty(None)
     nameDesc = ObjectProperty(None)
     lookDesc = ObjectProperty(None)
+    itemList = ObjectProperty(None)
+    radioNorth = ObjectProperty(None)
+    radioEast = ObjectProperty(None)
+    radioSouth = ObjectProperty(None)
+    radioWest = ObjectProperty(None)
+    northTags = ObjectProperty(None)
+    eastTags = ObjectProperty(None)
+    southTags = ObjectProperty(None)
+    westTags = ObjectProperty(None)
     
     #Initializations
     location = [0,0]
@@ -48,7 +57,6 @@ class MainClass(TabbedPanel):
     tempLoc = ax.plot()
     permLoc = ax.plot()
     global dbName
-    
     
     #Generates Map
     def genMap(self):
@@ -77,7 +85,8 @@ class MainClass(TabbedPanel):
             self.ax.set_yticks(self.yTicks)
             self.ax.grid(which='both')
             self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
-            self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
+            self.locationCall.text = "Location: ("+str(self.location[0])+","+str(self.location[1])+")"
+            self.loadSpot(self.location[0],self.location[1])
             return
             
         if self.gName.text != '' and path.exists(self.gName.text + '.db') == False:
@@ -94,7 +103,7 @@ class MainClass(TabbedPanel):
             cursor = con.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS setup(id integer PRIMARY KEY AUTOINCREMENT, title text, author text, sizeX integer, sizeY integer, startX integer, startY integer)")
             con.commit()
-            cursor.execute("CREATE TABLE IF NOT EXISTS spots(id integer PRIMARY KEY AUTOINCREMENT, xLoc integer, yLoc integer, name text, description text)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS spots(id integer PRIMARY KEY AUTOINCREMENT, xLoc integer, yLoc integer, name text, description text, items text, north integer, east integer, south integer, west integer, northList text, eastList text, southList text, westList text)")
             con.commit()
             cursor.execute("INSERT INTO setup (title, author, sizeX, sizeY, startX, startY) VALUES (?,?,?,?,?,?)", (dbName, author, xRange, yRange, xStart, yStart))
             con.commit()
@@ -115,6 +124,7 @@ class MainClass(TabbedPanel):
             self.ax.grid(which='both')
             self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
             self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
+            self.loadSpot(self.location[0],self.location[1])
             return
     
     def moveLeft(self):
@@ -165,7 +175,7 @@ class MainClass(TabbedPanel):
         global dbName
         con = sqlite3.connect(dbName + '.db')
         cursor = con.cursor()
-        cursor.execute("SELECT name, description FROM spots WHERE xLoc = ? AND yLoc = ?", (xLoc, yLoc))
+        cursor.execute("SELECT name, description, items, north, east, south, west, northList, eastList, southList, westList FROM spots WHERE xLoc = ? AND yLoc = ?", (xLoc, yLoc))
         dataRes = cursor.fetchall()
         try:
             self.nameDesc.text = dataRes[0][0]
@@ -175,6 +185,50 @@ class MainClass(TabbedPanel):
             self.lookDesc.text = dataRes[0][1]
         except:
             self.lookDesc.text = ''
+        try:
+            self.itemList.text = dataRes[0][2]
+        except:
+            self.itemList.text = ''
+        try:
+            self.radioNorth.active = dataRes[0][3]
+            self.enableNorth()
+        except:
+            self.radioNorth.active = 0
+            self.enableNorth()
+        try:
+            self.radioEast.active = dataRes[0][4]
+            self.enableEast()
+        except:
+            self.radioEast.active = 0
+            self.enableEast()
+        try:
+            self.radioSouth.active = dataRes[0][5]
+            self.enableSouth()
+        except:
+            self.radioSouth.active = 0
+            self.enableSouth()
+        try:
+            self.radioWest.active = dataRes[0][6]
+            self.enableWest()
+        except:
+            self.radioWest.active = 0
+            self.enableWest()
+        try:
+            self.northTags.text = dataRes[0][7]
+        except:
+            self.northTags.text = ''
+        try:
+            self.eastTags.text = dataRes[0][8]
+        except:
+            self.eastTags.text = ''
+        try:
+            self.southTags.text = dataRes[0][9]
+        except:
+            self.southTags.text = ''
+        try:
+            self.westTags.text = dataRes[0][10]
+        except:
+            self.westTags.text = ''
 
     def updateName(self):
         global dbName
@@ -189,6 +243,13 @@ class MainClass(TabbedPanel):
         cursor = con.cursor()
         cursor.execute("UPDATE spots SET description = ? WHERE xLoc = ? AND yLoc = ?", (self.lookDesc.text, self.location[0], self.location[1]))
         con.commit()
+        
+    def updateItems(self):
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        cursor.execute("UPDATE spots SET items = ? WHERE xLoc = ? AND yLoc = ?", (self.itemList.text, self.location[0], self.location[1]))
+        con.commit()
 
     def commitSpot(self):
         global dbName
@@ -196,6 +257,90 @@ class MainClass(TabbedPanel):
         cursor = con.cursor()
         cursor.execute("INSERT INTO spots (xLoc, yLoc) VALUES (?, ?)", (self.location[0], self.location[1]))
         con.commit()
+        self.ids.gridPlot.clear_widgets()
+        self.permLoc, = self.ax.plot(self.location[0],self.location[1],'bo')
+        self.tempLoc, = self.ax.plot(self.location[0], self.location[1], 'ro')
+        self.ax.set_xticks(self.xTicks)
+        self.ax.set_yticks(self.yTicks)
+        self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+    
+    def deleteSpot(self):
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        cursor.execute("DELETE FROM spots WHERE xLoc = ? AND yLoc = ?", (self.location[0], self.location[1]))
+        con.commit()
+        self.ids.gridPlot.clear_widgets()
+        self.ax.clear()
+        cursor.execute("SELECT sizeX, sizeY FROM setup WHERE id = 1")
+        setupData = cursor.fetchall()[0]
+        xRange = setupData[0]
+        yRange = setupData[1]
+        cursor.execute("SELECT * FROM spots")
+        spotRes = cursor.fetchall()
+        for point in spotRes:
+            self.permLoc, = self.ax.plot(point[1],point[2],'bo')
+        self.tempLoc, = self.ax.plot(self.location[0], self.location[1], 'ro')
+        self.xTicks = np.arange(0, xRange, 1)
+        self.yTicks = np.arange(0, yRange, 1)
+        self.ax.set_xticks(self.xTicks)
+        self.ax.set_yticks(self.yTicks)
+        self.ax.grid(which='both')
+        self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+        
+    def enableNorth(self):
+        if self.radioNorth.active == True:
+            self.northTags.disabled = False
+        else:
+            self.northTags.disabled = True
+            
+    def enableEast(self):
+        if self.radioEast.active == True:
+            self.eastTags.disabled = False
+        else:
+            self.eastTags.disabled = True
+            
+    def enableSouth(self):
+        if self.radioSouth.active == True:
+            self.southTags.disabled = False
+        else:
+            self.southTags.disabled = True
+            
+    def enableWest(self):
+        if self.radioWest.active == True:
+            self.westTags.disabled = False
+        else:
+            self.westTags.disabled = True
+            
+    def updateDirections(self):
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        if self.radioNorth.active == True:
+            cursor.execute("UPDATE spots SET north = 1, northList = ? WHERE xLoc = ? AND yLoc = ?", (self.northTags.text, self.location[0], self.location[1]))
+            con.commit()
+        else:
+            cursor.execute("UPDATE spots SET north = 0")
+            con.commit()
+        if self.radioEast.active == True:
+            cursor.execute("UPDATE spots SET east = 1, eastList = ? WHERE xLoc = ? AND yLoc = ?", (self.eastTags.text, self.location[0], self.location[1]))
+            con.commit()
+        else:
+            cursor.execute("UPDATE spots SET east = 0")
+            con.commit()
+        if self.radioSouth.active == True:
+            cursor.execute("UPDATE spots SET south = 1, southList = ? WHERE xLoc = ? AND yLoc = ?", (self.southTags.text, self.location[0], self.location[1]))
+            con.commit()
+        else:
+            cursor.execute("UPDATE spots SET south = 0")
+            con.commit()
+        if self.radioWest.active == True:
+            cursor.execute("UPDATE spots SET west = 1, westList = ? WHERE xLoc = ? AND yLoc = ?", (self.westTags.text, self.location[0], self.location[1]))
+            con.commit()
+        else:
+            cursor.execute("UPDATE spots SET west = 0")
+            con.commit()
+        
 #APP Class
 class MyApp(App):
     def build(self):
