@@ -22,6 +22,8 @@
 	eastTags: eastTags
 	southTags: southTags
 	westTags: westTags
+	fileChooser: fileChooser
+	mainImage: mainImage
 	
     do_default_tab: False
 
@@ -175,6 +177,22 @@
 			Button:
 				text: "Update Directions"
 				on_press: root.updateDirections()
+			GridLayout:
+				cols: 4
+				Label:
+					text: "Image:"
+				FileChooserListView:
+					id: fileChooser
+				GridLayout:
+					cols: 1
+					Button:
+						text: "Upload"
+						on_press: root.uploadImage()
+					Button:
+						text: "Delete"
+						on_press: root.deleteImage()
+				Image:
+					id: mainImage
 			
 	TabbedPanelItem:
 		text: "Test"

@@ -17,6 +17,7 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.image import Image
 
 kv = Builder.load_file("kivyApp.kv")
 
@@ -47,6 +48,8 @@ class MainClass(TabbedPanel):
     eastTags = ObjectProperty(None)
     southTags = ObjectProperty(None)
     westTags = ObjectProperty(None)
+    fileChooser = ObjectProperty(None)
+    mainImage = ObjectProperty(None)
     
     #Initializations
     location = [0,0]
@@ -103,7 +106,7 @@ class MainClass(TabbedPanel):
             cursor = con.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS setup(id integer PRIMARY KEY AUTOINCREMENT, title text, author text, sizeX integer, sizeY integer, startX integer, startY integer)")
             con.commit()
-            cursor.execute("CREATE TABLE IF NOT EXISTS spots(id integer PRIMARY KEY AUTOINCREMENT, xLoc integer, yLoc integer, name text, description text, items text, north integer, east integer, south integer, west integer, northList text, eastList text, southList text, westList text)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS spots(id integer PRIMARY KEY AUTOINCREMENT, xLoc integer, yLoc integer, name text, description text, items text, north integer, east integer, south integer, west integer, northList text, eastList text, southList text, westList text, image blob)")
             con.commit()
             cursor.execute("INSERT INTO setup (title, author, sizeX, sizeY, startX, startY) VALUES (?,?,?,?,?,?)", (dbName, author, xRange, yRange, xStart, yStart))
             con.commit()
@@ -341,6 +344,13 @@ class MainClass(TabbedPanel):
             cursor.execute("UPDATE spots SET west = 0")
             con.commit()
         
+    def uploadImage(self):
+        print(self.fileChooser.path)
+    """
+        with open(self.fileChooser.path, 'rb') as file:
+            blobData = file.read()
+            print(blobData)
+    """
 #APP Class
 class MyApp(App):
     def build(self):
