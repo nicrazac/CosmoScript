@@ -178,60 +178,68 @@ class MainClass(TabbedPanel):
         global dbName
         con = sqlite3.connect(dbName + '.db')
         cursor = con.cursor()
-        cursor.execute("SELECT name, description, items, north, east, south, west, northList, eastList, southList, westList FROM spots WHERE xLoc = ? AND yLoc = ?", (xLoc, yLoc))
+        cursor.execute("SELECT id, name, description, items, north, east, south, west, northList, eastList, southList, westList, image FROM spots WHERE xLoc = ? AND yLoc = ?", (xLoc, yLoc))
         dataRes = cursor.fetchall()
         try:
-            self.nameDesc.text = dataRes[0][0]
+            self.nameDesc.text = dataRes[0][1]
         except:
             self.nameDesc.text = ''
         try:
-            self.lookDesc.text = dataRes[0][1]
+            self.lookDesc.text = dataRes[0][2]
         except:
             self.lookDesc.text = ''
         try:
-            self.itemList.text = dataRes[0][2]
+            self.itemList.text = dataRes[0][3]
         except:
             self.itemList.text = ''
         try:
-            self.radioNorth.active = dataRes[0][3]
+            self.radioNorth.active = dataRes[0][4]
             self.enableNorth()
         except:
             self.radioNorth.active = 0
             self.enableNorth()
         try:
-            self.radioEast.active = dataRes[0][4]
+            self.radioEast.active = dataRes[0][5]
             self.enableEast()
         except:
             self.radioEast.active = 0
             self.enableEast()
         try:
-            self.radioSouth.active = dataRes[0][5]
+            self.radioSouth.active = dataRes[0][6]
             self.enableSouth()
         except:
             self.radioSouth.active = 0
             self.enableSouth()
         try:
-            self.radioWest.active = dataRes[0][6]
+            self.radioWest.active = dataRes[0][7]
             self.enableWest()
         except:
             self.radioWest.active = 0
             self.enableWest()
         try:
-            self.northTags.text = dataRes[0][7]
+            self.northTags.text = dataRes[0][8]
         except:
             self.northTags.text = ''
         try:
-            self.eastTags.text = dataRes[0][8]
+            self.eastTags.text = dataRes[0][9]
         except:
             self.eastTags.text = ''
         try:
-            self.southTags.text = dataRes[0][9]
+            self.southTags.text = dataRes[0][10]
         except:
             self.southTags.text = ''
         try:
-            self.westTags.text = dataRes[0][10]
+            self.westTags.text = dataRes[0][11]
         except:
             self.westTags.text = ''
+        try:
+            filename = "image" + str(dataRes[0][0])+".jpg"
+            image = open(filename, "wb")
+            image.write(dataRes[0][12])
+            image.close()
+            self.ids.mainImage.source = "image" + str(dataRes[0][0])+ ".jpg"
+        except:
+            self.ids.mainImage.source = ""
 
     def updateName(self):
         global dbName
@@ -345,12 +353,25 @@ class MainClass(TabbedPanel):
             con.commit()
         
     def uploadImage(self):
-        print(self.fileChooser.path)
-    """
-        with open(self.fileChooser.path, 'rb') as file:
-            blobData = file.read()
-            print(blobData)
-    """
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        try:
+            self.ids.mainImage.source = self.fileChooser.selection[0]
+            with open(self.fileChooser.selection[0], 'rb') as file:
+                blobData = file.read()
+            cursor.execute("UPDATE spots SET image = ? WHERE xLoc = ? AND yLoc = ?", (blobData, self.location[0], self.location[1]))
+            con.commit()
+        except:
+            pass
+            
+    def deleteImage(self):
+        global dbName
+        con = sqlite3.connect(dbName + '.db')
+        cursor = con.cursor()
+        cursor.execute("DELETE image FROM spots WHERE xLoc = ? AND yLoc = ?", (self.location[0], self.location[1]))
+        con.commit()
+        
 #APP Class
 class MyApp(App):
     def build(self):

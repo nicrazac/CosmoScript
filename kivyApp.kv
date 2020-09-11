@@ -181,8 +181,6 @@
 				cols: 4
 				Label:
 					text: "Image:"
-				FileChooserListView:
-					id: fileChooser
 				GridLayout:
 					cols: 1
 					Button:
@@ -191,8 +189,11 @@
 					Button:
 						text: "Delete"
 						on_press: root.deleteImage()
+				FileChooserListView:
+					id: fileChooser
 				Image:
 					id: mainImage
+					source: ""
 			
 	TabbedPanelItem:
 		text: "Test"
