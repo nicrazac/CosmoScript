@@ -59,6 +59,7 @@ class MainClass(TabbedPanel):
     ax = fig.add_subplot(1,1,1)
     tempLoc = ax.plot()
     permLoc = ax.plot()
+    tempFile = ''
     global dbName
     
     #Generates Map
@@ -140,6 +141,7 @@ class MainClass(TabbedPanel):
         self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
         self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
         self.loadSpot(self.location[0],self.location[1])
+        self.cleanUp(self.tempFile)
         
     def moveRight(self):
         self.ids.gridPlot.clear_widgets()
@@ -151,6 +153,7 @@ class MainClass(TabbedPanel):
         self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
         self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
         self.loadSpot(self.location[0],self.location[1])
+        self.cleanUp(self.tempFile)
         
     def moveUp(self):
         self.ids.gridPlot.clear_widgets()
@@ -162,6 +165,7 @@ class MainClass(TabbedPanel):
         self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))
         self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
         self.loadSpot(self.location[0],self.location[1])
+        self.cleanUp(self.tempFile)
         
     def moveDown(self):
         self.ids.gridPlot.clear_widgets()
@@ -173,6 +177,7 @@ class MainClass(TabbedPanel):
         self.ids.gridPlot.add_widget(FigureCanvasKivyAgg(plt.gcf()))   
         self.locationCall.text = "Current Location: ("+str(self.location[0])+","+str(self.location[1])+")"
         self.loadSpot(self.location[0],self.location[1])
+        self.cleanUp(self.tempFile)
 
     def loadSpot(self,xLoc,yLoc):
         global dbName
@@ -233,6 +238,7 @@ class MainClass(TabbedPanel):
         except:
             self.westTags.text = ''
         try:
+            self.tempFile = "image" + str(dataRes[0][0])+".jpg"
             filename = "image" + str(dataRes[0][0])+".jpg"
             image = open(filename, "wb")
             image.write(dataRes[0][12])
@@ -240,7 +246,13 @@ class MainClass(TabbedPanel):
             self.ids.mainImage.source = "image" + str(dataRes[0][0])+ ".jpg"
         except:
             self.ids.mainImage.source = ""
-
+            
+    def cleanUp(self, filename):
+        try:
+            os.remove(filename)
+        except:
+            pass
+            
     def updateName(self):
         global dbName
         con = sqlite3.connect(dbName + '.db')
